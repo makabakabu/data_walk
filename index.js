@@ -221,27 +221,27 @@ const typeEqual = (defaultStructure, structure) => {
 };
 
 // !TEST
-frozen({
-    abc: "adsf",
-    ccc: {
-        __defaultIndex__: 2,
-        __oneOf__: true,
-        __optional__: true,
-        body: ["aaa", "bbb", "ddd"],
-    },
-    ddd: {
-        __listFunction__: true,
-        body: (structure) =>
-            structure.map((value, index) => ({
-                aaa: "Ass",
-                bbb: "asdf",
-                eee: "asfd",
-            })),
-    },
-}, {
-    abc: "dsde",
-    ccc: null,
-    ddd: ["asdfa", "Asdfasfd"],
-}); /*?*/
+// frozen({
+//     abc: "adsf",
+//     ccc: {
+//         __defaultIndex__: 2,
+//         __oneOf__: true,
+//         __optional__: true,
+//         body: ["aaa", "bbb", "ddd"],
+//     },
+//     ddd: {
+//         __listFunction__: true,
+//         body: (structure) =>
+//             structure.map((value, index) => ({
+//                 aaa: "Ass",
+//                 bbb: "asdf",
+//                 eee: "asfd",
+//             })),
+//     },
+// }, {
+//     abc: "dsde",
+//     ccc: null,
+//     ddd: ["asdfa", "Asdfasfd"],
+// }); /*?*/
 
 export default frozen;
