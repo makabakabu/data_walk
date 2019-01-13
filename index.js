@@ -42,7 +42,7 @@ const typeOf = (value) => Object.prototype.toString.call(value).replace(/\[|\]/g
 
 // 如果既想控制类型, 又想在类型不正确的时候可以有替换数据, 直接使用替换的数据,由于本身具有类型, 没有问题.
 
-// if you want more access of checking you can use __valueCheck__ pass a function to check it. output the checked value
+// if you want more access of checking you can use __listFunction__ pass a function to check it. output the checked value
 
 // caveat: if you want use string undefined as the real value of it, you need to use __useTypeAsValue__
 
@@ -57,19 +57,26 @@ const typeOf = (value) => Object.prototype.toString.call(value).replace(/\[|\]/g
 const frozen = (defaultStructure, structure) => {
     // if it is an object and has few properties:
     // 使用body字段表示内容
-    // use __listFunction__: true 表示是否为listFunction 用来描述
     // use __oneOf__: true 来表示之一
     // 由于 有__oneOf__但是没有optional的时候是必须要有的, 所以当没有的时候,会需要设置默认元素, 这时可以用, defaultIndex 来指认缺省值, 若没有defaultIndex, 则使用第一个.
     // use __optional__: true 来表示可选字段
     // 在使用list的时候如果 defaultStructure 和 structure 对不上的时候直接报错, 所以建议对数据的个数不确定的话不要直接使用array
     switch (typeOf(defaultStructure)) {
-        case "string":
-            if (typeOf(structure) === defaultStructure) {
+        case "string": {
+            // 如果defaultStructure 为 ["undefined", "null", "symbol", "string", "number", "boolean", "promise", "function", "array", "object"]其中一个, 那么structure必须为相同类型, 不然为undefined,
+            // 如果defaultStructure 不是类型数据, 则只需要 structure 为 string 即可
+            if (defaultStructure === "any") {
+                return structure;
+            }
+            const isTypeValue = ["undefined", "null", "symbol", "string", "number", "boolean", "promise", "function", "array", "object"].includes(defaultStructure);
+            if (isTypeValue && typeOf(structure) === defaultStructure || !isTypeValue && typeOf(structure) === "string"){
                 return structure;
             } else {
                 console.error("API接口: 不符合预设数据类型");
-                return ["undefined", "null", "symbol", "string", "number", "boolean", "promise", "function", "array", "object"].includes(defaultStructure) ? undefined : defaultStructure;
+                return undefined;
             }
+        }
+        
         case "number":
         case "boolean":
         case "symbol":
@@ -101,15 +108,9 @@ const frozen = (defaultStructure, structure) => {
 
         case "object":
             switch (true) {
-                case hasOwnProperty(defaultStructure, "__useTypeAsValue__"):
-                    return typeOf(structure) === "string" ? structure : defaultStructure.body;
-
-                case hasOwnProperty(defaultStructure, "__valueCheck__"):
-                    return defaultStructure.__valueCheck__[structure];
-
                 case hasOwnProperty(defaultStructure, "__optional__") && typeOf(structure) !== "undefined"/*?*/:
                 // if don't have any other property remove use body, but if we has other property then remove it.
-                    if (["__oneOf__", "__listFunction__"].some((certainProperty, index) => hasOwnProperty(defaultStructure, certainProperty))) {
+                    if (["__oneOf__", "__useTypeAsValue__", "__listFunction__"].some((certainProperty, index) => hasOwnProperty(defaultStructure, certainProperty))) {
                         return frozen(remove("__optional__", defaultStructure), structure);
                     } else {
                         return frozen(defaultStructure["body"], structure);
@@ -118,29 +119,27 @@ const frozen = (defaultStructure, structure) => {
                 case hasOwnProperty(defaultStructure, "__optional__") && typeOf(structure) === "undefined":
                     return undefined;
 
+                case hasOwnProperty(defaultStructure, "__useTypeAsValue__"):
+                    return typeOf(structure) === "string" ? structure : defaultStructure.body;
+
+                case hasOwnProperty(defaultStructure, "__listFunction__"):
+                    return frozen(defaultStructure.body(structure)/*?*/, structure);
+
                 case hasOwnProperty(defaultStructure, "__oneOf__"): {
                     if (typeOf(defaultStructure["body"]) !== "array" || defaultStructure["body"]["length"] === 0) {
                         console.error("API接口: oneOf 类型的 body 必须为 array 类型, 而且必须有值");
                         return undefined;
                     }
-                    const index = defaultStructure["body"].findIndex((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure));
+                    const index= defaultStructure["body"].findIndex((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure))/*?*/;
                     switch (true) {
                         case index === -1 && hasOwnProperty(defaultStructure, "__defaultIndex__"):
-                            return frozen(defaultStructure["body"][defaultStructure["__defaultIndex__"]], structure);
+                            return defaultStructure["body"][defaultStructure["__defaultIndex__"]];
                         case index === -1 && !hasOwnProperty(defaultStructure, "__defaultIndex__"):
-                            return frozen(defaultStructure["body"][0], structure);
+                            return undefined;
                         default:
-                            return defaultStructure["body"][index];
+                            return structure;
                     }
                 }
-
-                case hasOwnProperty(defaultStructure, "__listFunction__"): // 存在疑问...
-                    if (typeOf(structure) === "array") {
-                        return frozen(defaultStructure["body"](structure)/*?*/, structure);
-                    } else {
-                        console.error("API接口: listFunction 需要 array 数据类型");
-                        return frozen(defaultStructure["body"](structure), []);
-                    }
 
                 default:
                     return reduce(defaultStructure, (tempResult, certainDefaultStructure, key) => {
@@ -166,7 +165,12 @@ const frozen = (defaultStructure, structure) => {
 const typeEqual = (defaultStructure, structure) => {
     // 判断 structure2 是否符合structure1
     switch (typeOf(defaultStructure)) {
-        case "string":
+        case "string": {
+            // 如果defaultStructure 为 ["undefined", "null", "symbol", "string", "number", "boolean", "promise", "function", "array", "object"]其中一个, 那么structure必须为相同类型, 不然为undefined,
+            // 如果defaultStructure 不是类型数据, 则只需要 structure 为 string 即可
+            const isTypeValue = ["undefined", "null", "symbol", "string", "number", "boolean", "promise", "function", "array", "object"].includes(defaultStructure);
+            return isTypeValue && typeOf(structure) === defaultStructure || !isTypeValue && typeOf(structure) === "string";
+        }
         case "number":
         case "boolean":
         case "symbol":
@@ -191,11 +195,14 @@ const typeEqual = (defaultStructure, structure) => {
                 case hasOwnProperty(defaultStructure, "__optional__") && typeOf(structure) === "undefined":
                     return true;
 
+                case hasOwnProperty(defaultStructure, "__useTypeAsValue__"):
+                    return typeOf(structure) === "string";
+
+                case hasOwnProperty(defaultStructure, "__listFunction__"):
+                    return typeEqual(defaultStructure.body(structure)/*?*/, structure);
+
                 case hasOwnProperty(defaultStructure, "__oneOf__"):
                     return defaultStructure.body.findIndex((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure)) !== -1;
-
-                case hasOwnProperty(defaultStructure, "__listFunction__"): // 存在疑问...
-                    return typeEqual(defaultStructure.body(structure), structure);
 
                 default:
                     return every(defaultStructure, (certainDefaultStructure, key) => {
@@ -223,6 +230,14 @@ const typeEqual = (defaultStructure, structure) => {
 // !TEST
 // frozen({
 //     abc: "adsf",
+//     add: {
+//         __useTypeAsValue__: true,
+//         body: "string",
+//     },
+//     hahahah: {
+//         __oneOf__: true,
+//         body: ["undefined", "null", "string", "number"],
+//     },
 //     ccc: {
 //         __defaultIndex__: 2,
 //         __oneOf__: true,
@@ -232,16 +247,18 @@ const typeEqual = (defaultStructure, structure) => {
 //     ddd: {
 //         __listFunction__: true,
 //         body: (structure) =>
-//             structure.map((value, index) => ({
-//                 aaa: "Ass",
-//                 bbb: "asdf",
-//                 eee: "asfd",
-//             })),
+//         structure.map((value, index) => ({
+//             aaa: "Ass",
+//             bbb: "asdf",
+//             eee: "asfd",
+//         }))
 //     },
 // }, {
+//     hahahah: 1,
 //     abc: "dsde",
+//     add: 1,
 //     ccc: null,
-//     ddd: ["asdfa", "Asdfasfd"],
+//     ddd: [{aaa: "Ass", bbb:"asdfafd", eee: "dfadfasdf"}, "Asdfasfd"],
 // }); /*?*/
 
-export default frozen;
+module.exports = frozen;

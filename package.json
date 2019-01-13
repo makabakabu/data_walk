@@ -1,6 +1,6 @@
 {
   "name": "frozen-api",
-  "version": "1.0.1",
+  "version": "1.0.8",
   "description": "check and set default value for the variable you are not sure",
   "main": "index.js",
   "scripts": {
