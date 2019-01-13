@@ -1,0 +1,22 @@
+{
+  "name": "frozen",
+  "version": "1.0.0",
+  "description": "check and set default value for the variable you are not sure!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martinfengshenxiang/frozen.git"
+  },
+  "keywords": [
+    "frozen"
+  ],
+  "author": "edgeWalker",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/martinfengshenxiang/frozen/issues"
+  },
+  "homepage": "https://github.com/martinfengshenxiang/frozen#readme"
+}
