@@ -1,22 +1,22 @@
 {
-  "name": "frozen",
+  "name": "frozen-api",
   "version": "1.0.0",
-  "description": "check and set default value for the variable you are not sure!",
+  "description": "check and set default value for the variable you are not sure",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martinfengshenxiang/frozen.git"
+    "url": "git+https://github.com/martinfengshenxiang/frozen-api.git"
   },
   "keywords": [
-    "frozen"
+    "frozen-api"
   ],
   "author": "edgeWalker",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/martinfengshenxiang/frozen/issues"
+    "url": "https://github.com/martinfengshenxiang/frozen-api/issues"
   },
-  "homepage": "https://github.com/martinfengshenxiang/frozen#readme"
+  "homepage": "https://github.com/martinfengshenxiang/frozen-api#readme"
 }
