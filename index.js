@@ -1,20 +1,43 @@
-const every = (obj: any, func: (value: any, key: any) => boolean) => typeOf(obj) === "array" ? obj.every(func) : Object.entries(obj).every(([key, value]: [any, any]) => func(value, key));
-const hasOwnProperty = (obj1: any, obj2: any) => typeOf(obj1) === "object" && Object.prototype.hasOwnProperty.call(obj1, obj2);
-const reduce = (obj: any, func: (tempResult: any, value: any, key?: any) => any, initialResult?: any) => typeOf(obj) === "array" ? obj.reduce(func) : Object.entries(obj).reduce((tempResult, [key, value]) => func(tempResult, value, key), initialResult);
-const remove = (path: P | P[], object: any) => {
+const every = (obj, func) => typeOf(obj) === "array" ? obj.every(func) : Object.entries(obj).every(([key, value]) => func(value, key));
+const hasOwnProperty = (obj1, obj2) => typeOf(obj1) === "object" && Object.prototype.hasOwnProperty.call(obj1, obj2);
+const reduce = (obj, func, initialResult) => typeOf(obj) === "array" ? obj.reduce(func) : Object.entries(obj).reduce((tempResult, [key, value]) => func(tempResult, value, key), initialResult);
+const remove = (path, object) => {
     path = convertPath2List(path);
     const lastPath = path[path.length - 1];
     const restPath = path.slice(0, path.length - 1);
     const lastObject = get(restPath, object);
-    let value, restObject: any;
+    let value, restObject;
     if (typeOf(lastObject) === "object") {
         ({ [lastPath]: value, ...restObject } = lastObject);
     } else {
-        restObject = [...lastObject.slice(0, lastPath), ...lastObject.slice((lastPath as number) + 1)];
+        restObject = [...lastObject.slice(0, lastPath), ...lastObject.slice(lastPath + 1)];
     }
     return restPath.length === 0 ? restObject : set(restPath, restObject, object);
 };
-const typeOf = (value: any) => Object.prototype.toString.call(value).replace(/\[|\]/gi, "").split(" ")[1].toLowerCase();
+const convertPath2List = (path) => {
+    switch (typeOf(path)) {
+        case "string":
+        case "number":
+            return [path];
+
+        case "array":
+            return path;
+
+        default:
+            return [];
+    }
+};
+const get = (path, object) => {
+    path = convertPath2List(path);
+    return path.reduce((certainList, certainPath) => {
+        if (hasOwnProperty(certainList, certainPath)) {
+            return certainList[certainPath];
+        } else {
+            throw new Error("don't have the key");
+        }
+    }, object);
+};
+const typeOf = (value) => Object.prototype.toString.call(value).replace(/\[|\]/gi, "").split(" ")[1].toLowerCase();
 // 如果只想规定某个字段的类型, 不想要规定他的值, 只需要使用 undefined string, number, boolean, symbol, promise function null array object, 此时类型正确即可
 
 // 如果既想控制类型, 又想在类型不正确的时候可以有替换数据, 直接使用替换的数据,由于本身具有类型, 没有问题.
@@ -31,7 +54,7 @@ const typeOf = (value: any) => Object.prototype.toString.call(value).replace(/\[
 // listFunction used to describe the list.
 // ! 不适用于使用object 来初始化的 string, boolean, 等等.
 // ! 数组中不可以使用缺省, 如果可以缺省, 则证明不是同一类型数据, 那么可以用object来表示
-const frozen = (defaultStructure: any, structure?: any): any => {
+const frozen = (defaultStructure, structure) => {
     // if it is an object and has few properties:
     // 使用body字段表示内容
     // use __listFunction__: true 表示是否为listFunction 用来描述
@@ -63,7 +86,7 @@ const frozen = (defaultStructure: any, structure?: any): any => {
         case "array":
             switch (`${typeOf(structure) === typeOf(defaultStructure)} ${structure.length === defaultStructure.length}`) {
                 case "true true":
-                    return defaultStructure.map((certainDefaultStructure: any, index: number) => frozen(certainDefaultStructure, structure[index]));
+                    return defaultStructure.map((certainDefaultStructure, index) => frozen(certainDefaultStructure, structure[index]));
 
                 case "true false":
                     console.error("API接口: 数组长度不一致");
@@ -86,7 +109,7 @@ const frozen = (defaultStructure: any, structure?: any): any => {
 
                 case hasOwnProperty(defaultStructure, "__optional__") && typeOf(structure) !== "undefined"/*?*/:
                 // if don't have any other property remove use body, but if we has other property then remove it.
-                    if (["__oneOf__", "__listFunction__"].some((certainProperty: string, index: number) => hasOwnProperty(defaultStructure, certainProperty))) {
+                    if (["__oneOf__", "__listFunction__"].some((certainProperty, index) => hasOwnProperty(defaultStructure, certainProperty))) {
                         return frozen(remove("__optional__", defaultStructure), structure);
                     } else {
                         return frozen(defaultStructure["body"], structure);
@@ -100,7 +123,7 @@ const frozen = (defaultStructure: any, structure?: any): any => {
                         console.error("API接口: oneOf 类型的 body 必须为 array 类型, 而且必须有值");
                         return undefined;
                     }
-                    const index = defaultStructure["body"].findIndex((certainDefaultStructure: any, index: number) => typeEqual(certainDefaultStructure, structure));
+                    const index = defaultStructure["body"].findIndex((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure));
                     switch (true) {
                         case index === -1 && hasOwnProperty(defaultStructure, "__defaultIndex__"):
                             return frozen(defaultStructure["body"][defaultStructure["__defaultIndex__"]], structure);
@@ -120,7 +143,7 @@ const frozen = (defaultStructure: any, structure?: any): any => {
                     }
 
                 default:
-                    return reduce(defaultStructure, (tempResult: any, certainDefaultStructure: any, key: string) => {
+                    return reduce(defaultStructure, (tempResult, certainDefaultStructure, key) => {
                         switch (true) {
                             case hasOwnProperty(certainDefaultStructure, "__optional__") && !hasOwnProperty(structure, key):
                                 return tempResult;
@@ -140,7 +163,7 @@ const frozen = (defaultStructure: any, structure?: any): any => {
     }
 };
 
-const typeEqual = (defaultStructure: any, structure?: any): boolean => {
+const typeEqual = (defaultStructure, structure) => {
     // 判断 structure2 是否符合structure1
     switch (typeOf(defaultStructure)) {
         case "string":
@@ -155,7 +178,7 @@ const typeEqual = (defaultStructure: any, structure?: any): boolean => {
 
         case "array":
             if (`${typeOf(defaultStructure) === typeOf(structure)} ${defaultStructure.length === structure.length}`) {
-                return (defaultStructure as any[]).every((certainDefaultStructure: any, index: number) => typeEqual(certainDefaultStructure, structure[index]));
+                return defaultStructure.every((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure[index]));
             } else {
                 return false;
             }
@@ -169,13 +192,13 @@ const typeEqual = (defaultStructure: any, structure?: any): boolean => {
                     return true;
 
                 case hasOwnProperty(defaultStructure, "__oneOf__"):
-                    return (defaultStructure["body"] as any[]).findIndex((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure)) !== -1;
+                    return defaultStructure.body.findIndex((certainDefaultStructure, index) => typeEqual(certainDefaultStructure, structure)) !== -1;
 
                 case hasOwnProperty(defaultStructure, "__listFunction__"): // 存在疑问...
-                    return typeEqual(defaultStructure["body"](structure), structure);
+                    return typeEqual(defaultStructure.body(structure), structure);
 
                 default:
-                    return every(defaultStructure, (certainDefaultStructure: any, key: string) => {
+                    return every(defaultStructure, (certainDefaultStructure, key) => {
                         switch (true) {
                             case hasOwnProperty(certainDefaultStructure, "__optional__") && !hasOwnProperty(structure, key):
                                 return true;
@@ -208,8 +231,8 @@ frozen({
     },
     ddd: {
         __listFunction__: true,
-        body: (structure: any[]) =>
-            structure.map((value: any, index: number) => ({
+        body: (structure) =>
+            structure.map((value, index) => ({
                 aaa: "Ass",
                 bbb: "asdf",
                 eee: "asfd",
