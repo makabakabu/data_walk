@@ -11,12 +11,15 @@ npm install frozen-api
 ## usage
 
 ```js
-    import frozen from "frozen-api";
-    const frozenAfter = frozen({
-        a: "string",
-    }, {
-        a: "abc",
-    }); // { a: "abc" }
+import frozen from "frozen-api";
+const frozenAfter = frozen(
+  {
+    a: "string"
+  },
+  {
+    a: "abc"
+  }
+); // { a: "abc" }
 ```
 
 you want to check the input type when you called by some user or the output type when you call others.
@@ -38,4 +41,8 @@ and oneOf type if you want multiple type
 if it's not the type we want, replace it;
 
 there are several difficulty facing array:
-we provide \_\_listFunction__ to overcome it;
+we provide \_\_listFunction\_\_ to overcome it;
+
+Symbol considered to be the most unnecessary type;
+
+use Symbol to represent type undefined, type Symbol or...
