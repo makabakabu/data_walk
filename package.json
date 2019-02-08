@@ -1,5 +1,5 @@
 {
-  "name": "Walk",
+  "name": "data_walk",
   "version": "1.0.0",
   "description": "check and set default value for the variable you are not sure",
   "main": "lib/index.js",
@@ -19,17 +19,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martinfengshenxiang/Walk.git"
+    "url": "git+https://github.com/martinfengshenxiang/data_walk.git"
   },
   "keywords": [
-    "Walk"
+    "data_walk"
   ],
   "author": "edgeWalker",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/martinfengshenxiang/Walk/issues"
+    "url": "https://github.com/martinfengshenxiang/data_walk/issues"
   },
-  "homepage": "https://github.com/martinfengshenxiang/Walk#readme",
+  "homepage": "https://github.com/martinfengshenxiang/data_walk#readme",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
