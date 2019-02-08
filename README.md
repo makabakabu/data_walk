@@ -53,6 +53,6 @@ use test("", () => {
 ## helper Function
 
 | name       | type                                                          | example                                                                                                                                                                                                                  |
-| :--------- | :------------------------------------------------------------ |
+| :--------- | :------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | $const     | (value1: any) => (value: any) => true \| string               | $const("haha")("hahaha") <br> <font color="red"> const required&nbsp;haha <br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;got &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hahaha</font>      |
 | $typeCheck | (type: string) => (value: any) => string \| int \| float .... | $typeCheck("string")("hahaha")<br> <font color="red"> const required&nbsp;haha <br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;got &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hahaha</font> |
