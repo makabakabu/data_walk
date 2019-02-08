@@ -2,10 +2,21 @@
   "name": "frozen-api",
   "version": "1.0.8",
   "description": "check and set default value for the variable you are not sure",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --config jestconfig.json",
+    "build": "tsc && babel lib -d lib",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
   },
+  "files": [
+    "lib/**/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/martinfengshenxiang/frozen-api.git"
@@ -20,8 +31,19 @@
   },
   "homepage": "https://github.com/martinfengshenxiang/frozen-api#readme",
   "devDependencies": {
+    "@babel/preset-env": "^7.3.1",
+    "@types/jest": "^24.0.0",
     "eslint": "^5.12.1",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.15.0"
+    "eslint-plugin-import": "^2.15.0",
+    "jest": "^24.1.0",
+    "prettier": "^1.16.4",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.1"
+  },
+  "dependencies": {
+    "little_bit": "^1.0.6"
   }
 }

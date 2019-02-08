@@ -10,39 +10,46 @@ npm install frozen-api
 
 ## usage
 
-```js
-import frozen from "frozen-api";
-const frozenAfter = frozen(
-  {
-    a: "string"
-  },
-  {
-    a: "abc"
-  }
-); // { a: "abc" }
+```ts
+import { $walk, $typeCheck } from '$walk';
+const { $string } = type;
+const afterWalk = $walk(
+  $object({
+    a: $typeCheck('string'),
+  }),
+)({
+  a: 'abc',
+}); // { a: "abc" }
 ```
 
-you want to check the input type when you called by some user or the output type when you call others.
+### check and warn
 
-some aspect we want to do about the data;
+if it's not the type we want, warn it.
 
-### check it
-
-if it's not the type we want, undefined it;
-
-we provide undefined, null, symbol, string, number, boolean, promise, function, array, object
+we provide undefined, null, symbol, string, number, boolean,promise, function, array, object
 
 and optional type if you want to skip it
 
 and oneOf type if you want multiple type
 
-### setDefaultValue
+you can use custom validation function to validate, but need to put it into test.
 
-if it's not the type we want, replace it;
+ideal Way:
 
-there are several difficulty facing array:
-we provide \_\_listFunction\_\_ to overcome it;
+```json
+grandparent/parent/children/superJunior:
+  set       value: 2;
+            type: number;
 
-Symbol considered to be the most unnecessary type;
+  required  type: string;
+```
 
-use Symbol to represent type undefined, type Symbol or...
+将一个数据传入, 然后这个数据通过层层验证
+
+use test("", () => {
+
+}); to replace the default error message
+
+## 最后进行差错提醒, 对可能产生的错误进行预警
+
+\$validate 是唯一的一个可以包着非 walkFunction 的函数
