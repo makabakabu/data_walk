@@ -1,17 +1,17 @@
-# frozen-api
+# Walk
 
 check and set default value for you value that not sure!
 
 ## installation
 
 ```sh
-npm install frozen-api
+npm install Walk
 ```
 
 ## usage
 
 ```ts
-import { $walk, $typeCheck } from '$walk';
+import { $walk, $typeCheck } from 'Walk';
 const { $string } = type;
 const afterWalk = $walk(
   $object({

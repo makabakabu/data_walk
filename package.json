@@ -1,5 +1,5 @@
 {
-  "name": "frozen-api",
+  "name": "Walk",
   "version": "1.0.8",
   "description": "check and set default value for the variable you are not sure",
   "main": "lib/index.js",
@@ -19,17 +19,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martinfengshenxiang/frozen-api.git"
+    "url": "git+https://github.com/martinfengshenxiang/Walk.git"
   },
   "keywords": [
-    "frozen-api"
+    "Walk"
   ],
   "author": "edgeWalker",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/martinfengshenxiang/frozen-api/issues"
+    "url": "https://github.com/martinfengshenxiang/Walk/issues"
   },
-  "homepage": "https://github.com/martinfengshenxiang/frozen-api#readme",
+  "homepage": "https://github.com/martinfengshenxiang/Walk#readme",
   "devDependencies": {
     "@babel/preset-env": "^7.3.1",
     "@types/jest": "^24.0.0",
