@@ -2,3 +2,6 @@
 src/__tests__
 node_modules
 /lib
+.npmignore
+jestconfig.json
+package-lock.json
