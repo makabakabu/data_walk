@@ -2,7 +2,7 @@ import { compose, equal, intersection, range, size, typeOf, Xor } from 'little_b
 
 type IOutput = boolean | string | any[];
 function $const(value1: any) {
-  return (value: any) => equal(value1, value) || `const required ${value1.toString()}\n got ${value.toString()}`;
+  return (value: any) => equal(value1, value) || `const require ${value1.toString()}\n got ${value.toString()}`;
 }
 
 function $typeCheck(type: string) {
@@ -20,7 +20,7 @@ function $typeCheck(type: string) {
       default:
         return typeOf(value) === type
           ? true
-          : `type check required ${type}\n got value: ${value.toString()} type: ${typeOf(value)}`; // 分开 int 和 float;
+          : `type check require ${type}\n got value: ${value.toString()} type: ${typeOf(value)}`; // 分开 int 和 float;
     }
   };
 }
@@ -29,7 +29,7 @@ function $typeCheck(type: string) {
 function $array(validateArray: any[]) {
   return (array: any[]) => {
     if (array.length !== validateArray.length) {
-      return `array required length ${validateArray.length}\n array got length ${array.length}`;
+      return `array require length ${validateArray.length}\n array got length ${array.length}`;
     }
     for (const index of range(array.length)) {
       // 如果不对， 则报错
