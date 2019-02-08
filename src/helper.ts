@@ -5,7 +5,7 @@ function $const(value1: any) {
   return (value: any) => equal(value1, value) || `const required ${value1.toString()}\n got ${value.toString()}`;
 }
 
-function $checkType(type: string) {
+function $typeCheck(type: string) {
   return (value: any) => {
     switch (type) {
       case 'int':
@@ -144,7 +144,7 @@ function $every(...funcArray: Array<(value: any) => boolean | any[] | string>) {
   };
 }
 $const.isWalkFunction = true;
-$checkType.isWalkFunction = true;
+$typeCheck.isWalkFunction = true;
 $optional.isWalkFunction = true;
 $object.isWalkFunction = true;
 $array.isWalkFunction = true;
@@ -154,5 +154,5 @@ $every.isWalkFunction = true;
 $validate.isWalkFunction = true;
 const $testIsWalkFunction = (func: any) =>
   (typeOf(func) === 'function' && func.isWalkFunction) || 'cannot use the outside function';
-export { $const, $checkType, $optional, $object, $array, $oneOf, $test, $every, $testIsWalkFunction, $validate };
+export { $const, $typeCheck, $optional, $object, $array, $oneOf, $test, $every, $testIsWalkFunction, $validate };
 // 现在只剩下如何呈现错误信息了。

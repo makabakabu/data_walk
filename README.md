@@ -50,6 +50,9 @@ use test("", () => {
 
 }); to replace the default error message
 
-## 最后进行差错提醒, 对可能产生的错误进行预警
+## helper Function
 
-\$validate 是唯一的一个可以包着非 walkFunction 的函数
+| name       | type                                                          | example                                                                                                                                                                                                                  |
+| :--------- | :------------------------------------------------------------ |
+| $const     | (value1: any) => (value: any) => true \| string               | $const("haha")("hahaha") <br> <font color="red"> const required&nbsp;haha <br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;got &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hahaha</font>      |
+| $typeCheck | (type: string) => (value: any) => string \| int \| float .... | $typeCheck("string")("hahaha")<br> <font color="red"> const required&nbsp;haha <br>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;got &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hahaha</font> |
