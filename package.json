@@ -1,6 +1,6 @@
 {
   "name": "data_walk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "check and set default value for the variable you are not sure",
   "main": "lib/index.js",
   "scripts": {

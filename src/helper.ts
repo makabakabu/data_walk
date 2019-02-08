@@ -1,4 +1,4 @@
-import { compose, equal, intersection, range, size, typeOf, Xor } from 'little_bit';
+import { compose, equal, fill, intersection, range, size, typeOf, Xor } from 'little_bit';
 
 const $stringify = (value: string | any[]) => Symbol(JSON.stringify({ type: typeOf(value), value }));
 const $parse = (symbol: symbol) => {
@@ -35,7 +35,18 @@ const $typeCheck = (type: string) => (value: any) => {
 };
 
 // 查看validateArray 是否每一个都是提供的方法。。。
-const $array = (validateArray: any[]) => (array: any[]) => {
+const $array = (validateArray: any | any[], everyElementUseSameValidate: boolean = false) => (array: any[]) => {
+  // 如果validateArray 不是 array 并且 everyElementUseSameValidate 是false 则显示错误信息
+  // 如果validateArray 是 array 并且 everyElementUseSameValidate 是true 则显示错误信息
+  if (
+    (typeOf(validateArray) !== 'array' && everyElementUseSameValidate === false) ||
+    (typeOf(validateArray) === 'array' && everyElementUseSameValidate === true)
+  ) {
+    return $stringify('parameter error');
+  }
+  if (everyElementUseSameValidate === true) {
+    validateArray = fill([], array.length, validateArray);
+  }
   if (array.length !== validateArray.length) {
     return $stringify(`array require length ${validateArray.length}\n array got length ${array.length}`);
   }
