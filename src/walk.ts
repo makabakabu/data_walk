@@ -1,9 +1,35 @@
-import { equal, typeOf } from 'little_bit';
+import { equal, get, hasOwnProperty, map, typeOf } from 'little_bit';
 import { $parse, $stringify } from './helper';
 
-const $walk = (validate: any) => (value: any) => {
-  // 如果validate 返回一个路径, 则表示false
-  // 首先测试下是否是walkFunction
+const getCertainPathValidateObject = (validateObject: any, path: Array<string | number>): any => {
+  // 到具体地址的时候， 如果里面有不知数量的array， children有3种类型， 一种是array， map, 然后是function
+  // 查看validateObject 中的 children 是function还是 array 和 map
+  if (path.length > 0 && !get(["children", path[0]], validateObject)) {
+    throw new Error("don't have such path validateObject");
+  }
+  if (path.length === 0) {
+    return validateObject;
+  }
+  return getCertainPathValidateObject(get(["children", path[0]], validateObject), path.slice(1));
+}
+
+const validate = (validateObject: any, value: any) => {
+  // 如果里面有validate 则将
+  // 这里需要提供错误信息
+  if (hasOwnProperty(validateObject, "validate")) {
+    const result = validateObject.validate(value);
+    const children = get(["children"], validateObject);
+    switch (true) {
+      case result && children !== undefined && typeOf(children) === "array":
+        return children.reduce((tempResult, certainChildren) => { }, true);
+    }
+  }
+}
+
+const $walk = (validateObject: any) => (path: Array<string | number>, value: any) => {
+  // 如果validate 中不存在children 的话， 这条线就结束了, 否则
+  const certainPathValidateObject = getCertainPathValidateObject(validateObject, path);
+
   if (typeOf(validate) !== 'function' && equal(validate, value)) {
     return true;
   }
